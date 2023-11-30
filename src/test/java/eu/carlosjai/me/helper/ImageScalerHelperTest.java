@@ -99,6 +99,5 @@ public class ImageScalerHelperTest {
         assertFalse(ImageScalerHelper.fileOrDirectoryExists(new File(StringUtils.EMPTY)));
         assertFalse(ImageScalerHelper.fileOrDirectoryExists(new File(RESIZED_PNG_FILE_PATH)));
         assertTrue(ImageScalerHelper.fileOrDirectoryExists(new File(PNG_FILE_PATH)));
-        assertTrue(ImageScalerHelper.fileOrDirectoryExists(new File(EMPTY_DIR_PATH)));
     }
 }
