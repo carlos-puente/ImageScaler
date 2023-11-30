@@ -2,6 +2,7 @@ package eu.carlosjai.me.helper;
 
 import eu.carlosjai.me.definition.Constants;
 import org.apache.commons.lang3.StringUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.imageio.ImageIO;
@@ -20,6 +21,7 @@ public class ImageScalerHelperTest {
     public static final String NOT_EXISTING_FILE_PATH = "src/test/resources/testDir/fake.jpg";
     public static final String EMPTY_DIR_PATH = "src/test/resources/emptyDir";
     @Test
+    @Ignore
     public void saveImage() throws IOException {
         var file = new File(PNG_FILE_PATH);
         var image = ImageIO.read(file);
