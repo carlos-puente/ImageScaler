@@ -21,7 +21,7 @@ public class ImageScalerHelperTest {
     public static final String NOT_EXISTING_FILE_PATH = "src/test/resources/testDir/fake.jpg";
     public static final String EMPTY_DIR_PATH = "src/test/resources/emptyDir";
     @Test
-    @Ignore
+    @Ignore("Not supported in github builds, please activate on local")
     public void saveImage() throws IOException {
         var file = new File(PNG_FILE_PATH);
         var image = ImageIO.read(file);
@@ -32,8 +32,9 @@ public class ImageScalerHelperTest {
         assertEquals(file.getName(), resizedFile.getName());
         assertTrue(ImageScalerHelper.getFileSize(file) > ImageScalerHelper.getFileSize(resizedFile));
         assertTrue(image.getWidth() > resizedImage.getWidth());
-        resizedFile.delete();
+        var deleteResult = resizedFile.delete();
         assertFalse(resizedFile.exists());
+        assertTrue(deleteResult);
     }
 
     @Test
