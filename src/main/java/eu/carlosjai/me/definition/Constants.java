@@ -10,7 +10,6 @@ public final class Constants {
     public static final String DOT_REGEX = "\\.";
     public static final int DECREMENT_WIDTH = 120;
     public static final int MAX_FILE_SIZE = 1024;
-    public static final String NO_RESIZE_NEEDED = "[INFO] -> Size is ok, no resize needed.";
     public static final String JPG = "jpg";
     public static final String JPEG = "jpeg";
     public static final String JFIF = "jfif";

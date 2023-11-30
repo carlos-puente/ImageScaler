@@ -10,15 +10,19 @@ import java.util.logging.Level;
 import javax.imageio.ImageIO;
 
 import eu.carlosjai.me.definition.Constants;
+import eu.carlosjai.me.definition.LoggerConstants;
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FileUtils;
 import lombok.extern.java.Log;
+import org.apache.commons.lang3.StringUtils;
 
+import static eu.carlosjai.me.definition.LoggerConstants.*;
 import static eu.carlosjai.me.helper.ImageScalerHelper.*;
 
 /**
  * This class is responsible for resizing images to a specific width and height.
  */
-@Log
+@Log4j2
 public class ImageScaler {
 
     /**
@@ -30,10 +34,12 @@ public class ImageScaler {
     public static void main(String[] args) {
         File directory = new File(Constants.RAW_PATH);
         if (directoryHasFiles(directory)) {
+            log.info(String.format(START_MESSAGE, directory.listFiles().length));
             Arrays.stream(Objects.requireNonNull(directory.listFiles()))
                     .forEach(ImageScaler::resizeFile);
+            log.info(String.format(FINISH_MESSAGE));
         } else {
-            log.log(Level.WARNING, "The raw directory is empty: "+Constants.RAW_PATH);
+           log.error(String.format(DIRECTORY_IS_EMPTY, Constants.RAW_PATH));
         }
     }
 
@@ -44,20 +50,28 @@ public class ImageScaler {
      * @param file The file to resize.
      */
     public static void resizeFile(final File file) {
+        log.info(SEPARATOR_START);
         if (fileOrDirectoryExists(file)) {
             try {
                 var originalSize = getFileSize(file);
+                log.info(String.format(RESIZE_PROCESS_STARTED, Constants.RAW_PATH+Constants.SLASH+file.getName(), originalSize));
                 getAndValidateImageFormat(file.getName());
-                if (originalSize > Constants.MAX_FILE_SIZE) {
+                if (originalSize == 0) {
+                    log.error(String.format(IMAGE_NOT_EXISTS, Objects.nonNull(file) ? file.getName() : StringUtils.EMPTY));
+                }
+                else if (originalSize > Constants.MAX_FILE_SIZE) {
                     resizeAndSaveImage(ImageIO.read(file), file.getName(), originalSize);
                 } else {
-                    log.log(Level.INFO, Constants.NO_RESIZE_NEEDED);
+                    log.info(RESIZE_NOT_NEEDED);
                     FileUtils.copyFile(file, new File(Constants.RESIZED_PATH + Constants.SLASH + file.getName()));
                 }
             } catch (IOException e) {
-                log.log(Level.SEVERE, "[ERROR] -> Image: " + file.getName() + " not processed: " + e);
+                log.error(String.format(FILE_NOT_PROCESSED, Objects.nonNull(file) ? file.getName() : StringUtils.EMPTY, e.getMessage()));
             }
+        } else {
+            log.error(String.format(IMAGE_NOT_EXISTS, Objects.nonNull(file) ? file.getName() : StringUtils.EMPTY));
         }
+        log.info(SEPARATOR_END);
     }
 
     /**
@@ -72,18 +86,18 @@ public class ImageScaler {
             saveImage(image, imageName, getWidth(image), Constants.RESIZED_PATH);
             var newFile = new File(Constants.RESIZED_PATH + Constants.SLASH + imageName);
             var newSize = getFileSize(newFile);
-            log.log(Level.INFO, "[START] processing -> " + imageName + " size: " + imageSize + "KB");
             if (newSize > Constants.MAX_FILE_SIZE) {
-                log.log(Level.INFO, "[INFO] Size continues high, reducing quality of " + newFile.getName() + " size: " + newSize + "KB");
+                log.info(RESIZE_PROCESS_SECOND_ATTEMPT, newFile.getName(), newSize);
                 saveImage(image, imageName, Constants.MAX_WIDTH - Constants.DECREMENT_WIDTH, Constants.RESIZED_PATH);
                 newFile = new File(Constants.RESIZED_PATH + Constants.SLASH + imageName);
                 newSize = getFileSize(newFile);
             }
-
-            log.log(Level.INFO, "[FINISH] -> " + newFile.getName() + " size: " + newSize + "KB");
+            log.info(String.format(RESIZE_PROCESS_FINSIHED, Constants.RESIZED_PATH+Constants.SLASH+newFile.getName(), newSize));
             if (newSize > imageSize) {
-                log.log(Level.WARNING, "[WARNING] -> size was increased");
+                log.warn(SIZE_INCREASED);
             }
+        } else {
+            log.error(String.format(IMAGE_NOT_EXISTS, StringUtils.defaultString(imageName, StringUtils.EMPTY)));
         }
     }
 
