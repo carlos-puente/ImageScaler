@@ -68,7 +68,7 @@ public class ImageScaler {
      * @param imageName The name of the image
      */
     public static void resizeAndSaveImage(BufferedImage image, String imageName, long imageSize) throws IOException {
-        if (image != null) {
+        if (Objects.nonNull(image)) {
             saveImage(image, imageName, getWidth(image), Constants.RESIZED_PATH);
             var newFile = new File(Constants.RESIZED_PATH + Constants.SLASH + imageName);
             var newSize = getFileSize(newFile);

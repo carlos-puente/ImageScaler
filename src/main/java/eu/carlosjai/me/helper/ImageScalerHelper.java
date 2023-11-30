@@ -2,6 +2,7 @@ package eu.carlosjai.me.helper;
 
 import eu.carlosjai.me.definition.Constants;
 import eu.carlosjai.me.definition.SupportedImagesEnum;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.maven.shared.utils.StringUtils;
 import org.imgscalr.Scalr;
 
@@ -22,7 +23,7 @@ public final class ImageScalerHelper {
      * @throws IOException if an I/O error occurs while saving the image
      */
     public static void saveImage(BufferedImage image, String imageName, int maxWidth, String resultsPath) throws IOException {
-        if (image != null) {
+        if (Objects.nonNull(image)) {
             ImageIO.write(
                     Scalr.resize(image, Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_WIDTH, maxWidth, Constants.MAX_HEIGHT, Scalr.OP_ANTIALIAS),
                     getAndValidateImageFormat(imageName),
@@ -38,7 +39,7 @@ public final class ImageScalerHelper {
      * @return {@code true} if the directory contains files, {@code false} otherwise.
      */
     public static boolean directoryHasFiles(final File directory) {
-        return isDirectory(directory) && directory.listFiles() != null && directory.listFiles().length > 0;
+        return isDirectory(directory) && ArrayUtils.isNotEmpty(directory.listFiles());
     }
 
     /**
@@ -90,9 +91,14 @@ public final class ImageScalerHelper {
      * @return the size of the file in kilobytes
      */
     public static long getFileSize(File file) {
-        return fileOrDirectoryExists(file) && !isDirectory(file )? file.length() / 1024 : 0;
+        return fileOrDirectoryExists(file) && !isDirectory(file) ? file.length() / 1024 : 0;
     }
 
+    /**
+     * Checks if a file exists
+     * @param file to check
+     * @return true if exists
+     */
     public static boolean fileOrDirectoryExists(File file) {
         return Objects.nonNull(file) && file.exists();
     }
